@@ -160,7 +160,7 @@ while run:
                 snake.next_ydir = 0
                 snake.next_xdir = 1
         
-        if event.type == APPLE_DISAPPEAR:
+        if event.type == APPLE_DISAPPEAR: #timer for apple
             apple = Apple()
     
     if level == 7: #endgame
