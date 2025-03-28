@@ -95,7 +95,6 @@ all_sprites.add(Pl, Em, Con)
 
 # Speed event
 INC_SPEED = pygame.USEREVENT + 1
-pygame.time.set_timer(INC_SPEED, 1000)
 
 # Collid event for coin
 COLLID_EVENT = pygame.USEREVENT + 2
@@ -105,11 +104,11 @@ running = True
 while running:
     for event in pygame.event.get(): #increase speed
         if event.type == INC_SPEED and SPEED < 20:
-            SPEED += 0.5
+            SPEED += 1
         if event.type == QUIT: #quit the game
             running = False
         if event.type == COLLID_EVENT:
-            COINS += 1
+            COINS += random.randint(1,3) #each coin has a different weight
 
     DISPLAYSURF.blit(background, (0,0)) 
     coins_score = font_small.render(f"Coins: {COINS}", True, BLACK)
@@ -121,6 +120,8 @@ while running:
         pygame.event.post(pygame.event.Event(COLLID_EVENT))
         Con.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
         
+        if COINS%4 == 0: #INC_SPEED is called when we collect n number of coins
+            pygame.event.post(pygame.event.Event(INC_SPEED))
 
     # Move and draw sprites
     for entity in all_sprites:

@@ -17,6 +17,7 @@ Font_for_win = pygame.font.SysFont("Verdana", BLOCK_SIZE*2)
 
 clock = pygame.time.Clock()
 speed = 4
+apples_eaten = 0
 
 #wall class
 class Wall:
@@ -56,7 +57,7 @@ class Snake:
 
     #draw part
     def update(self):
-        global apple, speed, wall, level
+        global apple, speed, wall, level, apples_eaten
 
         self.xdir = self.next_xdir
         self.ydir = self.next_ydir
@@ -88,6 +89,10 @@ class Snake:
             apple = Apple()
             level = 1
             wall = Wall(level)
+            apples_eaten = 0
+            pygame.time.set_timer(APPLE_DISAPPEAR, 0)
+            pygame.time.set_timer(APPLE_DISAPPEAR, 4000)
+            
 
         self.body.append(self.head)
         for i in range(len(self.body) - 1):
@@ -115,7 +120,7 @@ class Apple:
         pygame.draw.rect(screen, (255, 0, 0), self.rect)
 
 #net
-def drawGrid(): 
+def drawGrid():
     for x in range(0, Screen_Width, BLOCK_SIZE):
         for y in range(0, Screen_Height, BLOCK_SIZE):
             rect = pygame.Rect(x, y, BLOCK_SIZE, BLOCK_SIZE)
@@ -131,6 +136,9 @@ level = 1
 previous_level = level
 wall = Wall(level)
 apple = Apple()
+
+APPLE_DISAPPEAR = pygame.USEREVENT + 1
+pygame.time.set_timer(APPLE_DISAPPEAR, 4000)
 
 #main loop
 run = True
@@ -151,6 +159,9 @@ while run:
             elif event.key == pygame.K_RIGHT and not snake.xdir == -1:
                 snake.next_ydir = 0
                 snake.next_xdir = 1
+        
+        if event.type == APPLE_DISAPPEAR:
+            apple = Apple()
     
     if level == 7: #endgame
         win = Font_for_win.render("You win", True, (255, 255, 255))
@@ -167,7 +178,7 @@ while run:
     
     apple.update()
     
-    score = Font.render(f"Score: {len(snake.body) - 1}", True, (255, 255, 255))
+    score = Font.render(f"Score: {apples_eaten}", True, (255, 255, 255))
     int_level = int((len(snake.body) - 1) / 4) #how we calculate levels
     level = min(int_level + 1, 7)
     level_text = Font.render(f"Level: {level}", True, (255, 255, 255))
@@ -195,10 +206,13 @@ while run:
     #draw walls
     wall.draw(screen) 
 
-    #adding body part for snake
+    #adding body part for snake (apple eaten)
     if snake.head.x == apple.x and snake.head.y == apple.y:
         snake.body.append(pygame.Rect(snake.body[-1].x, snake.body[-1].y, BLOCK_SIZE, BLOCK_SIZE))
         apple = Apple()
+        apples_eaten += random.randint(1,3)
+        
+        pygame.time.set_timer(APPLE_DISAPPEAR, 4000)
         
     apple.update()
     
