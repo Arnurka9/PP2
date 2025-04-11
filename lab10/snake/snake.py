@@ -252,6 +252,9 @@ while startScreen:
 
 #main loop
 while run:
+    int_level = int((len(snake.body) - 1) / 4) #how we calculate levels
+    level = min(int_level + 1, 7)
+    
     for event in pygame.event.get(): #keyboard actions
         if event.type == pygame.QUIT:
             run = False
@@ -304,8 +307,6 @@ while run:
         apple.update()
         
         score = Font.render(f"Score: {apples_eaten}", True, (255, 255, 255))
-        int_level = int((len(snake.body) - 1) / 4) #how we calculate levels
-        level = min(int_level + 1, 7)
         level_text = Font.render(f"Level: {level}", True, (255, 255, 255))
         
         #max speed
