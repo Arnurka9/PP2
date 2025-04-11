@@ -250,17 +250,14 @@ while startScreen:
     pygame.display.update()
     clock.tick(60)
 
-#main loop
+just_unpaused = False  #flag to mark the release of pause
+
 while run:
-    int_level = int((len(snake.body) - 1) / 4) #how we calculate levels
-    level = min(int_level + 1, 7)
-    
-    for event in pygame.event.get(): #keyboard actions
+    for event in pygame.event.get():  # keyboard actions
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.KEYDOWN:
-            
-            #pause
+            # Pause
             if event.key == pygame.K_p:
                 if not pause:
                     pause = True
@@ -268,8 +265,9 @@ while run:
                     save_score(user_id, int_level, apples_eaten)
                 else:
                     pause = False
+                    just_unpaused = True  #Set the unpause flag
                     print("The game continues")
-        
+
             if not pause:
                 if event.key == pygame.K_DOWN and not snake.ydir == -1:
                     snake.next_ydir = 1
@@ -283,68 +281,75 @@ while run:
                 elif event.key == pygame.K_RIGHT and not snake.xdir == -1:
                     snake.next_ydir = 0
                     snake.next_xdir = 1
-                
-        
-        if event.type == APPLE_DISAPPEAR and not pause: #timer for apple
+
+        if event.type == APPLE_DISAPPEAR and not pause:  # timer for apple
             apple = Apple()
-    
+
+    #skip one frame after releasing the pause (so that there is no additional move)
+    if just_unpaused:
+        just_unpaused = False
+        continue  
+
     if not pause:
-        snake.update()
-    
-        if level == 7: #endgame
-            win = Font_for_win.render("You win", True, (255, 255, 255))
-            screen.blit(win, (Screen_Width//3, 380))
-            pygame.display.update()
-            time.sleep(2)
-            screen.fill((0, 255, 0))
-            save_score(user_id, int_level+1, apples_eaten)
-            run = False
-        
-        
-        screen.fill((0, 0, 0))
-        drawGrid()
-        
-        apple.update()
-        
-        score = Font.render(f"Score: {apples_eaten}", True, (255, 255, 255))
-        level_text = Font.render(f"Level: {level}", True, (255, 255, 255))
-        
-        #max speed
-        if speed < 11:
-            speed = int_level + 4 
-        
-        pygame.draw.rect(screen, (0, 255, 0), snake.head)
-        
-        #draw body
-        for square in snake.body:
-            pygame.draw.rect(screen, (0, 255, 0), square)
+        snake.update()  
 
-        #text
-        screen.blit(score, (20, 10))
-        screen.blit(level_text, (20, 45))
-
-        #update walls when level changes
-        if level != previous_level:
-            wall = Wall(level)
-
-        previous_level = level
-
-        #draw walls
-        wall.draw(screen) 
-
-        #adding body part for snake (apple eaten)
-        if snake.head.x == apple.x and snake.head.y == apple.y:
-            snake.body.append(pygame.Rect(snake.body[-1].x, snake.body[-1].y, BLOCK_SIZE, BLOCK_SIZE))
-            apple = Apple()
-            apples_eaten += random.randint(1,3)
-            
-            pygame.time.set_timer(APPLE_DISAPPEAR, 4000)
-            
-        apple.update()
-        
+    if level == 7:  # endgame
+        win = Font_for_win.render("You win", True, (255, 255, 255))
+        screen.blit(win, (Screen_Width // 3, 380))
         pygame.display.update()
-        clock.tick(speed)
+        time.sleep(2)
+        screen.fill((0, 255, 0))
+        save_score(user_id, int_level + 1, apples_eaten)
+        run = False
+
+    screen.fill((0, 0, 0))
+    drawGrid()
+
+    apple.update()
+
+    score = Font.render(f"Score: {apples_eaten}", True, (255, 255, 255))
+    int_level = int((len(snake.body) - 1) / 4)  # How we calculate levels
+    level = min(int_level + 1, 7)
+    level_text = Font.render(f"Level: {level}", True, (255, 255, 255))
+
+    # Max speed
+    if speed < 11:
+        speed = int_level + 4
+
+    pygame.draw.rect(screen, (0, 255, 0), snake.head)
+
+    # Draw body
+    for square in snake.body:
+        pygame.draw.rect(screen, (0, 255, 0), square)
+
+    # Text
+    screen.blit(score, (20, 10))
+    screen.blit(level_text, (20, 45))
+
+    # Update walls when level changes
+    if level != previous_level:
+        wall = Wall(level)
+
+    previous_level = level
+
+    # Draw walls
+    wall.draw(screen)
+
+    # Adding body part for snake (apple eaten)
+    if snake.head.x == apple.x and snake.head.y == apple.y:
+        snake.body.append(pygame.Rect(snake.body[-1].x, snake.body[-1].y, BLOCK_SIZE, BLOCK_SIZE))
+        apple = Apple()
+        apples_eaten += random.randint(1, 3)
+
+        pygame.time.set_timer(APPLE_DISAPPEAR, 4000)
+
+    apple.update()
+
+    pygame.display.update()
+    clock.tick(speed)
+
 pygame.quit()
+
 
 
 conn.close()
