@@ -21,7 +21,7 @@ def insert_data_input(cursor):
     name_input =  input("Input name: ")
     phone_input = input("Input phone: ")
     sql = "INSERT INTO contacts (name, phone) VALUES (%s, %s)"
-    cursor.execute(sql, name_input, phone_input)
+    cursor.execute(sql, (name_input, phone_input))
     
 def update_data(cursor):
     print("1. Update only name")
@@ -33,7 +33,7 @@ def update_data(cursor):
         name_input = input("Input name: ")
         phone_input = input("Input phone: ")
         sql = "UPDATE contacts SET name = %s WHERE phone = %s"
-        cursor.execute(sql, name_input, phone_input)
+        cursor.execute(sql, (name_input, phone_input))
         
     elif func == 2:
         new_phone_input = input("Input phone: ")
