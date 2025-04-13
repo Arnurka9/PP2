@@ -18,10 +18,10 @@ def insert_data_csv(csv_file, cursor):
                 print("Error inserting")
 
 def insert_data_input(cursor):
-    name_input = input("Input name: ")
-    phone_input = int(input("Input phone: "))
-    sql = f"INSERT INTO contacts (name, phone) VALUES ('{name_input}', {phone_input})"
-    cursor.execute(sql)
+    name_input =  input("Input name: ")
+    phone_input = input("Input phone: ")
+    sql = "INSERT INTO contacts (name, phone) VALUES (%s, %s)"
+    cursor.execute(sql, name_input, phone_input)
     
 def update_data(cursor):
     print("1. Update only name")
@@ -31,15 +31,15 @@ def update_data(cursor):
     
     if func == 1:
         name_input = input("Input name: ")
-        phone_input = int(input("Input phone: "))
-        sql = f"UPDATE contacts SET name ={name_input} WHERE phone='{phone_input}'"
-        cursor.execute(sql)
+        phone_input = input("Input phone: ")
+        sql = "UPDATE contacts SET name = %s WHERE phone = %s"
+        cursor.execute(sql, name_input, phone_input)
         
     elif func == 2:
-        new_phone_input = int(input("Input phone: "))
-        current_phone_input = int(input("Input phone: "))
-        sql = f"UPDATE contacts SET name ={new_phone_input} WHERE phone='{current_phone_input}'"
-        cursor.execute(sql)
+        new_phone_input = input("Input phone: ")
+        current_phone_input = input("Input phone: ")
+        sql = "UPDATE contacts SET name = %s WHERE phone = %s"
+        cursor.execute(sql, new_phone_input, current_phone_input)
 
 def search_by_name_or_phone(cursor):
     print("1. Search by name")
@@ -85,14 +85,14 @@ def del_by_name_or_phone(cursor):
     
     if func == 1:
         name_input = input("Input name: ")
-        sql = f"SELECT * FROM contacts WHERE name = '{name_input}'"
-        cursor.execute(sql)
+        sql = "SELECT * FROM contacts WHERE name = %s"
+        cursor.execute(sql, (name_input,))
         print(cursor.fetchall())
         person_id = int(input("Input id of person: "))
-        sql = f"DELETE FROM contacts WHERE name = '{name_input}' AND id = {person_id}"
-        cursor.execute(sql)
+        sql = "DELETE FROM contacts WHERE name = %s AND id = %s"
+        cursor.execute(sql, (name_input, person_id))
         
     elif func == 2:
-        phone_input = int(input("Input phone: "))
-        sql = f"DELETE FROM contacts WHERE phone = '{phone_input}'"
-        cursor.execute(sql)
+        phone_input = input("Input phone: ")
+        sql = "DELETE FROM contacts WHERE phone = %s"
+        cursor.execute(sql, (phone_input,))
